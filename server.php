@@ -53,7 +53,8 @@ $server->on('message', function (\Swoole\WebSocket\Server $server, $frame) use($
     $service->onMessage($frame, $frame->fd);
 });
 
-$server->on('close', function ($server, $fd) use($service) {
+$server->on('close', function (\Swoole\WebSocket\Server $server, $fd) use($service) {
+    var_dump($server->connection_info($fd));
     echo "[{$fd}]客户端关闭\n";
     $service->onFdClose($fd);
 });
