@@ -17,7 +17,7 @@ $userTable->column('roomStatus', Swoole\Table::TYPE_INT); //当前状态 脚本�
 $userTable->column('updatedAt', Swoole\Table::TYPE_INT); //活跃时间timestamp
 $userTable->create();
 
-$roomTable = new Swoole\Table(4);
+$roomTable = new Swoole\Table(8);
 $roomTable->column('id', Swoole\Table::TYPE_STRING, 8);
 $roomTable->column('name', Swoole\Table::TYPE_STRING, 32);
 $roomTable->column('ownerId', Swoole\Table::TYPE_STRING, 8); //无房主时，为空字符串
