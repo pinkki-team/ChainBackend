@@ -1,0 +1,27 @@
+{
+    "name": "vitechliu/chain_server",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "vitech",
+            "email": "i@vitechliu.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "ext-json": "*",
+        "ext-zlib": "*",
+        "ext-openssl": "*",
+        "ext-redis": "*",
+        "illuminate/support": "^8.83"
+    },
+    "autoload": {
+       "psr-4": {
+           "App\\": "app/"
+       }
+    },
+    "require-dev": {
+        "swoole/ide-helper": "^5.1"
+    }
+}
