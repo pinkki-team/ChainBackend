@@ -17,4 +17,5 @@ class RoomUtil {
         $room->ownerId = $room['ownerId'];
         return $room;
     }
+
 }

@@ -60,18 +60,18 @@ $server->on('close', function (\Swoole\WebSocket\Server $server, $fd) use($servi
 });
 
 
-function checkAll($server) {
-    SocketUtil::contextSet(SocketUtil::CTX_SERVER, $server);
-    echo "状态检查\n";
-    echo \App\Utils\TableUtil::genTableStats();
-    echo "\n";
-}
-\Swoole\Timer::after(1000, function() use($server) {
-    checkAll($server);
-});
-\Swoole\Timer::tick(30 * 1000, function() use($server) {
-    checkAll($server);
-});
+//function checkAll($server) {
+//    SocketUtil::contextSet(SocketUtil::CTX_SERVER, $server);
+//    echo "状态检查\n";
+//    echo \App\Utils\TableUtil::genTableStats();
+//    echo "\n";
+//}
+//\Swoole\Timer::after(1000, function() use($server) {
+//    checkAll($server);
+//});
+//\Swoole\Timer::tick(30 * 1000, function() use($server) {
+//    checkAll($server);
+//});
 
 
 
