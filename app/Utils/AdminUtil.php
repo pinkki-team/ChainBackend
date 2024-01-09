@@ -8,6 +8,7 @@ class AdminUtil {
     //todo 清理
     public static function isUidAdmin(string $uid): bool {
         //TODO
-        return $uid === 'xVitechxxx';
+        return $uid === getenv('ADMIN_UID');
     }
+    
 }

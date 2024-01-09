@@ -30,7 +30,9 @@ class SocketUtil {
     public static function contextRequest(): array {
         return self::contextGet(self::CTX_REQUEST);
     }
-
+    public static function contextRequestId(): ?string {
+        return self::contextRequest()['requestId'] ?? null;
+    }
     public static function push(int $fd, string $action, array $data, ?Server $server = null) {
         $raw = [
             'action' => $action,
@@ -40,9 +42,8 @@ class SocketUtil {
         if (!is_null($server)) $server->push($fd, json_encode($raw, JSON_UNESCAPED_UNICODE));
     }
     public static function pushSuccess() {
-        $request = SocketUtil::contextRequest();
         self::push(SocketUtil::contextFd(), 'Success', [
-            'requestId' => $request['requestId'] ?? null
+            'requestId' => SocketUtil::contextRequestId()
         ]);
     }
     public static function pushResponse(int $fd, array $request, string $action, array $data) {
@@ -50,9 +51,8 @@ class SocketUtil {
         self::push($fd, $action, $data);
     }
     public static function pushError(string $errorMsg = '请求错误') {
-        $request = SocketUtil::contextRequest();
         self::push(SocketUtil::contextFd(), 'Error', [
-            'requestId' => $request['requestId'] ?? null,
+            'requestId' => SocketUtil::contextRequestId(),
             'elementMessage' => [
                 'type' => 'error',
                 'message' => $errorMsg

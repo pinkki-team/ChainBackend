@@ -4,6 +4,9 @@ use App\Utils\SocketUtil;
 
 require_once __DIR__. '/vendor/autoload.php';
 
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->safeLoad();
+
 $fdTable = new Swoole\Table(2048);
 $fdTable->column('fd', Swoole\Table::TYPE_INT);
 $fdTable->column('uid', Swoole\Table::TYPE_STRING, 8);
@@ -54,7 +57,8 @@ $server->on('message', function (\Swoole\WebSocket\Server $server, $frame) use($
 });
 
 $server->on('close', function (\Swoole\WebSocket\Server $server, $fd) use($service) {
-    var_dump($server->connection_info($fd));
+    $wsStatus = $server->connection_info($fd)['websocket_status'];
+    if ($wsStatus !== 3) return;
     echo "[{$fd}]客户端关闭\n";
     $service->onFdClose($fd);
 });

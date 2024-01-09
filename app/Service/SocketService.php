@@ -9,33 +9,39 @@ use Swoole\WebSocket\Frame;
 
 class SocketService {
     static $nameDictTest = [];
+    
+    const NO_AUTH_LIST = [
+        'login',
+        'ping'
+    ];
     public function onMessage(Frame $frame, string $fd) {
         $data = json_decode($frame->data, true);
         if (empty($data)) return;
         SocketUtil::contextSet(SocketUtil::CTX_REQUEST, $data);
-        $type = $data['type'] ?? null;
-        if (empty($type)) return;
+        $action = $data['action'] ?? null;
+        if (empty($action)) return;
         
-        if ($type === 'login') {
-            //无需校验的接口
-            $this->actionLogin($data);
-            return;
+        if (!in_array($action, self::NO_AUTH_LIST)) {
+            //需校验的接口
+            $uid = FdControl::fd2Uid($fd);
+            if (is_null($uid)) return;
+            SocketUtil::contextSet(SocketUtil::CTX_UID, $uid);
         }
         
-        $uid = FdControl::fd2Uid($fd);
-        if (is_null($uid)) return;
-        SocketUtil::contextSet(SocketUtil::CTX_UID, $uid);
-        
-        
-        $actionMethod = 'action' . ucfirst($type);
+        $actionMethod = 'action' . ucfirst($action);
         if (method_exists($this, $actionMethod)) {
             $this->$actionMethod($data);
         }
         
         //更新updated_at
     }
-    
+    public function actionPing(array $data) {
+        $this->log('ping');
+        SocketUtil::pushSuccess();
+    }
     public function actionLogin(array $data) {
+        $this->log('login');
+        
         $uid = $data['uid'];
         $name = $data['name'];
         if (strlen($uid) !== 8) {
