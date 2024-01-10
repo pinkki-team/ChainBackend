@@ -18,6 +18,7 @@ $userTable->column('name', Swoole\Table::TYPE_STRING, 32);
 $userTable->column('roomId', Swoole\Table::TYPE_STRING, 8); //所在房间，断线不会改变，主动退出、换房、被踢出才会改变
 $userTable->column('roomStatus', Swoole\Table::TYPE_INT); //当前状态 脚本会定时更新
 $userTable->column('updatedAt', Swoole\Table::TYPE_INT); //活跃时间timestamp
+$userTable->column('ping', Swoole\Table::TYPE_INT);
 $userTable->create();
 
 $roomTable = new Swoole\Table(8);

@@ -15,11 +15,12 @@ class SocketService {
         'ping'
     ];
     public function onMessage(Frame $frame, string $fd) {
-        $data = json_decode($frame->data, true);
-        if (empty($data)) return;
-        SocketUtil::contextSet(SocketUtil::CTX_REQUEST, $data);
-        $action = $data['action'] ?? null;
+        $raw = json_decode($frame->data, true);
+        if (empty($raw)) return;
+        SocketUtil::contextSet(SocketUtil::CTX_REQUEST, $raw);
+        $action = $raw['action'] ?? null;
         if (empty($action)) return;
+        $data = $raw['data'] ?? [];
         
         if (!in_array($action, self::NO_AUTH_LIST)) {
             //需校验的接口
@@ -33,7 +34,7 @@ class SocketService {
             $this->$actionMethod($data);
         }
         
-        //更新updated_at
+        //更新updated_at和ping
     }
     public function actionPing(array $data) {
         $this->log('ping');
@@ -41,7 +42,6 @@ class SocketService {
     }
     public function actionLogin(array $data) {
         $this->log('login');
-        
         $uid = $data['uid'];
         $name = $data['name'];
         if (strlen($uid) !== 8) {
