@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 
+use App\Entity\User;
 use Swoole\Coroutine;
 use Swoole\WebSocket\Server;
 
@@ -9,6 +10,7 @@ class SocketUtil {
     const CTX_SERVER = 'server';
     const CTX_FD = 'fd';
     const CTX_UID = 'uid';
+    const CTX_USER = 'user';
     const CTX_REQUEST = 'request';
     
     public static function contextGet(string $key, $default = null) {
@@ -27,12 +29,20 @@ class SocketUtil {
     public static function contextUid(): string {
         return self::contextGet(self::CTX_UID);
     }
+    public static function contextUser(): ?User {
+        return self::contextGet(self::CTX_USER);
+    }
     public static function contextRequest(): array {
         return self::contextGet(self::CTX_REQUEST);
     }
     public static function contextRequestId(): ?string {
         return self::contextRequest()['requestId'] ?? null;
     }
+    
+    
+    
+    
+    
     public static function push(int $fd, string $action, array $data, ?Server $server = null) {
         $raw = [
             'action' => $action,
@@ -46,9 +56,18 @@ class SocketUtil {
             'requestId' => SocketUtil::contextRequestId()
         ]);
     }
+    public static function pushSuccessWithData(array $data) {
+        $data['requestId'] = SocketUtil::contextRequestId();
+        self::push(SocketUtil::contextFd(), 'Success', $data);
+    }
     public static function pushResponse(int $fd, array $request, string $action, array $data) {
         $data['requestId'] = $request['requestId'] ?? null;
         self::push($fd, $action, $data);
+    }
+    public static function push403() {
+        self::push(SocketUtil::contextFd(), '403', [
+            'requestId' => SocketUtil::contextRequestId()
+        ]);
     }
     public static function pushError(string $errorMsg = '请求错误') {
         self::push(SocketUtil::contextFd(), 'Error', [

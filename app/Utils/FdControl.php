@@ -15,8 +15,16 @@ class FdControl {
         if ($uid === false) {
             return null;
         }
-        
         return $uid;
+    }
+    public static function uid2User(string $uid): ?User {
+        //找uid
+        $userTable = TableUtil::userTable();
+        $findUserModel = $userTable->get($uid);
+        if ($findUserModel === false) {
+            return null;
+        }
+        return User::fromModel($findUserModel);
     }
     /**  @throws BadFDException */
     public static function fd2User(string $fd): User {
@@ -26,34 +34,28 @@ class FdControl {
             throw new BadFDException();
         }
         //找uid
-        $userTable = TableUtil::userTable();
-        $user = new User();
-        $findUserModel = $userTable->get($uid);
-        if ($findUserModel === false) {
-            throw new BadFDException();
-        }
-        $user->uid = $uid;
-        $user->name = $findUserModel['name'];
+        $user = self::uid2User($uid);
+        if (is_null($user)) throw new BadFDException();
         return $user;
     }
-    public static function login(string $fd, string $uid, string $name): User {
+    public static function login(string $fd, string $uid, string $name) {
         //先找fd
         $fdTable = TableUtil::fdTable();
         $findUid = $fdTable->get($fd, 'uid');
         if ($findUid === false) {
             //新用户
-            $fdTable->set($fd, ['uid' => $uid]);
+            $fdTable->set($fd, ['fd' => intval($fd), 'uid' => $uid]);
         }
         //找uid
         $userTable = TableUtil::userTable();
-        $user = new User();
-        $user->uid = $uid;
         $findUserModel = $userTable->get($uid);
         if ($findUserModel === false) {
             //新建用户
             $userTable->set($uid, [
                 'uid' => $uid, 
-                'name' => $name
+                'name' => $name,
+                'activeFd' => intval($fd),
+                'roomStatus' => User::ROOM_STATUS_NONE,
             ]);
         } else {
             //重连到用户
@@ -63,9 +65,15 @@ class FdControl {
                     'name' => $name
                 ]);
             }
-            $user->name = $name;
+            //如果新fd和uid的activeFd不一致，将其下线
+            $activeFd = $findUserModel['activeFd'];
+            if (!is_null($activeFd) && $fd !== $findUserModel['activeFd']) {
+                $fdTable->delete(strval($activeFd));
+                $userTable->set($uid, [
+                    'activeFd' => intval($fd),
+                ]);
+            }
         }
         SocketUtil::contextSet(SocketUtil::CTX_UID, $uid);
-        return $user;
     }
 }

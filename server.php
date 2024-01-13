@@ -14,6 +14,7 @@ $fdTable->create();
 
 $userTable = new Swoole\Table(1024);
 $userTable->column('uid', Swoole\Table::TYPE_STRING, 8);
+$userTable->column('activeFd', Swoole\Table::TYPE_INT);
 $userTable->column('name', Swoole\Table::TYPE_STRING, 32);
 $userTable->column('roomId', Swoole\Table::TYPE_STRING, 8); //所在房间，断线不会改变，主动退出、换房、被踢出才会改变
 $userTable->column('roomStatus', Swoole\Table::TYPE_INT); //当前状态 脚本会定时更新
@@ -35,7 +36,7 @@ $roomTable->set('test', [
     'status' => 1,
     'updatedAt' => time()
 ]);
-$server = new \Swoole\WebSocket\Server("127.0.0.1", 9999);
+$server = new \Swoole\WebSocket\Server("0.0.0.0", 9999);
 $server->set([
     'worker_num' => 2,
     'heartbeat_check_interval' => 10,
@@ -47,6 +48,7 @@ $server->roomTable = $roomTable;
 echo "服务器启动\n";
 
 $service = new \App\Service\SocketService();
+$httpService = new \App\Service\HttpService();
 $server->on('open', function (\Swoole\WebSocket\Server $server, $request) {
     echo "[{$request->fd}]握手成功\n";
 });
@@ -56,7 +58,30 @@ $server->on('message', function (\Swoole\WebSocket\Server $server, $frame) use($
     echo "[{$frame->fd}]原始消息:{$frame->data}\n";
     $service->onMessage($frame, $frame->fd);
 });
-
+$server->on('request', function (Swoole\Http\Request $request, Swoole\Http\Response $response) use($httpService) {
+    global $server;
+    $httpService->response = $response;
+    $response->header('Access-Control-Allow-Origin', '*');
+    $response->header('Access-Control-Allow-Headers', '*');
+    $response->header('Access-Control-Allow-Methods', '*');
+    SocketUtil::contextSet(SocketUtil::CTX_SERVER, $server);
+    if ($request->getMethod() === 'OPTIONS') {
+        $httpService->success([]);
+        return;
+    }
+    if (!$httpService->headerCheck($request)) {
+        $httpService->response404();
+        return;
+    }
+    $target = $request->get['target'] ?? null;
+    switch ($target) {
+        case 'roomInfo':
+            $httpService->actionRoomInfo($request, $response);
+            return;
+    }
+    $response->setStatusCode(404);
+    $response->end();
+});
 $server->on('close', function (\Swoole\WebSocket\Server $server, $fd) use($service) {
     $wsStatus = $server->connection_info($fd)['websocket_status'];
     if ($wsStatus !== 3) return;
