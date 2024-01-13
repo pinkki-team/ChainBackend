@@ -20,3 +20,4 @@ yarn-error.log
 /.vscode
 git.exe.lnk
 .DS_Store
+.htaccess
