@@ -8,7 +8,16 @@ class AdminUtil {
     //todo 清理
     public static function isUidAdmin(string $uid): bool {
         //TODO
-        return $uid === getenv('ADMIN_UID');
+        echo "uid:" . $uid ."\n";
+        echo 'envuid:' . env('ADMIN_UID') . "\n";
+        return $uid === env('ADMIN_UID');
     }
     
+    public static function getAllTableData(): array {
+        return [
+            'fd' => TableUtil::dumpTable(TableUtil::fdTable()),
+            'user' => TableUtil::dumpTable(TableUtil::userTable()),
+            'room' => TableUtil::dumpTable(TableUtil::roomTable()),
+        ];
+    }
 }

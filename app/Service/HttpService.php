@@ -19,14 +19,12 @@ class HttpService extends BaseService {
     public function headerCheck(Request $request): bool {
         $authRes = env('BASE_HEADER_AUTH_KEY');
         $headerRes = $request->header[self::BASE_HEADER_AUTH_KEY] ?? null;
-        echo "AuthRes: $authRes \n";
-        echo "HeaderRes: $headerRes \n";
         return $authRes === $headerRes;
     }
     
     public function actionRoomInfo(Request $request) {
         $roomId = $request->get['roomId'] ?? null;
-        $this->log("查询RoomInfo:" . $roomId);
+//        $this->log("查询RoomInfo:" . $roomId);
         if (is_null($roomId)) {
             $this->response422();
             return;

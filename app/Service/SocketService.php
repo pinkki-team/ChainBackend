@@ -5,12 +5,15 @@ namespace App\Service;
 use App\Entity\Room;
 use App\Entity\User;
 use App\Exception\LoginException;
+use App\Service\Actions\AdminActions;
+use App\Utils\AdminUtil;
 use App\Utils\FdControl;
 use App\Utils\RoomUtil;
 use App\Utils\SocketUtil;
 use Swoole\WebSocket\Frame;
 
 class SocketService extends BaseService {
+    use AdminActions;
     static $nameDictTest = [];
     
     const NO_AUTH_LIST = [
@@ -60,6 +63,8 @@ class SocketService extends BaseService {
         FdControl::login(strval(SocketUtil::contextFd()), $uid, $name);
         SocketUtil::pushSuccess();
     }
+    const ERS_STATUS_NORMAL = 1; //基础
+    const ERS_STATUS_RECONNECT = 2; //重连
     public function actionJoinRoom(array $data) {
         $roomId = $data['roomId'];
         //首先检查房间是否存在
@@ -69,17 +74,22 @@ class SocketService extends BaseService {
             return;
         }
         
+        
+        $res = [
+            'status' => self::ERS_STATUS_NORMAL,
+            'room' => $room->infoArray(),
+        ];
         //首先检查roomstatus
         $user = User::current();
         switch ($user->roomStatus) {
             case User::ROOM_STATUS_NORMAL:
-                if ($user->roomId === $roomId) {
+                if ($user->roomId !== $roomId) {
                     //意外情况，暂时只返回房间信息
                     RoomUtil::pushRoomInfoResponse($room);
                     return;
                 } else {
                     //更换房间
-                    RoomUtil::userLeftRoom($user->uid, $roomId);
+                    RoomUtil::userLeftRoomEvent($user->uid, $roomId);
                 }
                 break;
             case User::ROOM_STATUS_DISCONNECTED:
@@ -113,6 +123,8 @@ class SocketService extends BaseService {
     public function actionLeaveRoom(array $data) {
         
     }
+    
+    
     
     
     

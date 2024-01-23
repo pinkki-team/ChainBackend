@@ -19,6 +19,14 @@ class TableUtil {
         return SocketUtil::contextServer()->roomTable;
     }
     
+    public static function dumpTable(Table $table): array {
+        $res = [];
+        foreach ($table as $row) {
+            $res []= $row;
+        }
+        return $res;
+    }
+    
     
     public static function genTableStats(): string {
         $res = [];

@@ -6,6 +6,8 @@ use App\Utils\FdControl;
 use App\Utils\SocketUtil;
 
 class User extends AbstractEntity {
+    const TABLE = 'userTable';
+    
     //使用这个方法，默认一定有user
     public static function current(): User {
         $contextUser = SocketUtil::contextUser();
@@ -18,7 +20,9 @@ class User extends AbstractEntity {
     const ROOM_STATUS_DISCONNECTED = 2; //断线
     const ROOM_STATUS_ALREADY_DISCONNECTED = 3; //被自动脚本判断为断线。客户端拿到这个状态后，会提醒用户已断线更新为0
 
+    /** @var string */
     public $uid;
+    /** @var int */
     public $activeFd;
     public $name;
     /** @var string */
@@ -29,4 +33,8 @@ class User extends AbstractEntity {
     public $updatedAt;
     /** @var int */
     public $ping;
+
+    public static function mainKey(): string {
+        return 'uid';
+    }
 }

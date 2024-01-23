@@ -17,6 +17,17 @@ class FdControl {
         }
         return $uid;
     }
+    
+    public static function getFdsByUids(array $uids): array {
+        $fdTable = TableUtil::fdTable();
+        $res = [];
+        foreach ($fdTable as $row) {
+            if (in_array($row['uid'], $uids)) {
+                $res []= $row['fd'];
+            }
+        }
+        return $res;
+    }
     public static function uid2User(string $uid): ?User {
         //找uid
         $userTable = TableUtil::userTable();

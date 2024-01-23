@@ -7,6 +7,8 @@ require_once __DIR__. '/vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->safeLoad();
 
+/********************************** 建表 **********************************/
+
 $fdTable = new Swoole\Table(2048);
 $fdTable->column('fd', Swoole\Table::TYPE_INT);
 $fdTable->column('uid', Swoole\Table::TYPE_STRING, 8);
@@ -27,15 +29,21 @@ $roomTable->column('id', Swoole\Table::TYPE_STRING, 8);
 $roomTable->column('name', Swoole\Table::TYPE_STRING, 32);
 $roomTable->column('ownerId', Swoole\Table::TYPE_STRING, 8); //无房主时，为空字符串
 $roomTable->column('status', Swoole\Table::TYPE_INT); //当前状态
+$roomTable->column('wordGroupType', Swoole\Table::TYPE_STRING, 32); //词库类型
+$roomTable->column('wordGroupId', Swoole\Table::TYPE_STRING, 16); //词库id
 $roomTable->column('updatedAt', Swoole\Table::TYPE_INT); //活跃时间timestamp
 $roomTable->create();
-
+ 
 $roomTable->set('test', [
     'id' => 'test',
     'name' => '测试房间',
     'status' => 1,
-    'updatedAt' => time()
+    'updatedAt' => time(),
+    'wordGroupType' => \App\Entity\Room::WORD_GROUP_DEFAULT,
 ]);
+
+/********************************** 服务 **********************************/
+
 $server = new \Swoole\WebSocket\Server("0.0.0.0", 9999);
 $server->set([
     'worker_num' => 2,

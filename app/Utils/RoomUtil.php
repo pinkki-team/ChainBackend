@@ -3,6 +3,7 @@
 namespace App\Utils;
 
 use App\Entity\Room;
+use App\Entity\RoomMessage;
 use App\Entity\User;
 
 class RoomUtil {
@@ -38,11 +39,34 @@ class RoomUtil {
         }
         return $res;
     }
+    public static function getMemberUids(string $roomId): array {
+        $members = self::getMembers($roomId);
+        return array_map(function(User $member) {
+            return $member->uid;
+        }, $members);
+    }
+    
+    public static function getFds(string $roomId): array {
+        $members = self::getMembers($roomId);
+        $res = [];
+        foreach ($members as $member) {
+            if (!is_null($member->activeFd)) $res []= $member->activeFd;
+        }
+        return $res;
+    }
     public static function pushRoomInfoResponse(Room $room) {
         SocketUtil::pushSuccessWithData((array)$room);
     }
     //用户彻底离开房间，需要发推送
-    public static function userLeftRoom(string $uid, string $roomId) {
+    public static function userLeftRoomEvent(string $uid, string $roomId) {
         //TODO
+    }
+    
+    
+    
+    
+    
+    public static function pushRoomMessage(Room $room, RoomMessage $message) {
+        
     }
 }
