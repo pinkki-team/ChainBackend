@@ -57,16 +57,60 @@ class RoomUtil {
     public static function pushRoomInfoResponse(Room $room) {
         SocketUtil::pushSuccessWithData((array)$room);
     }
-    //用户彻底离开房间，需要发推送
-    public static function userLeftRoomEvent(string $uid, string $roomId) {
+    //用户加入房间事件
+    public static function userEnterRoomEvent(User $user, string $roomId) {
+        self::pushUserJoin($roomId, $user);
+    }
+    //用户重连房间事件
+    public static function userReconnectEvent(User $user, string $roomId) {
         //TODO
+    }
+    //用户彻底离开房间
+    public static function userLeftRoomEvent(User $user, string $roomId, bool $isIntent) {
+        if ($isIntent) self::pushUserLeftIntent($roomId, $user);
+        else self::pushUserLeftDisconnected($roomId, $user);
     }
     
     
-    
-    
-    
-    public static function pushRoomMessage(Room $room, RoomMessage $message) {
-        
+    //推送
+    public static function pushSetAdmin(string $roomId, User $user) {
+        $msg = new RoomMessage();
+        $msg->type = RoomMessage::TYPE_SET_ADMIN;
+        $msg->fromUserId = $user->uid;
+        $msg->fromUserName = $user->name;
+        self::pushRoomMessage($roomId, $msg);
+    }
+    public static function pushUserJoin(string $roomId, User $user) {
+        $msg = new RoomMessage();
+        $msg->type = RoomMessage::TYPE_USER_JOIN;
+        $msg->fromUserId = $user->uid;
+        $msg->fromUserName = $user->name;
+        self::pushRoomMessage($roomId, $msg);
+    }
+    public static function pushUserLeftIntent(string $roomId, User $user) {
+        $msg = new RoomMessage();
+        $msg->type = RoomMessage::TYPE_USER_LEFT_INTENT;
+        $msg->fromUserId = $user->uid;
+        $msg->fromUserName = $user->name;
+        self::pushRoomMessage($roomId, $msg);
+    }
+    public static function pushUserLeftDisconnected(string $roomId, User $user) {
+        $msg = new RoomMessage();
+        $msg->type = RoomMessage::TYPE_USER_LEFT_DISCONNECTED;
+        $msg->fromUserId = $user->uid;
+        $msg->fromUserName = $user->name;
+        self::pushRoomMessage($roomId, $msg);
+    }
+    public static function pushChat(string $roomId, User $user, string $content) {
+        $msg = new RoomMessage();
+        $msg->type = RoomMessage::TYPE_CHAT;
+        $msg->fromUserId = $user->uid;
+        $msg->fromUserName = $user->name;
+        $msg->content = $content;
+        self::pushRoomMessage($roomId, $msg);
+    }
+    public static function pushRoomMessage(string $roomId, RoomMessage $message) {
+        $memberFds = self::getFds($roomId);
+        SocketUtil::pushGroup($memberFds, 'roomMessage', $message->toArray());
     }
 }

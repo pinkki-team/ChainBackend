@@ -2,14 +2,8 @@
 
 namespace App\Utils;
 
-use Swoole\Table;
-
 class AdminUtil {
-    //todo 清理
     public static function isUidAdmin(string $uid): bool {
-        //TODO
-        echo "uid:" . $uid ."\n";
-        echo 'envuid:' . env('ADMIN_UID') . "\n";
         return $uid === env('ADMIN_UID');
     }
     

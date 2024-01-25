@@ -21,4 +21,13 @@ trait AdminActions {
             'value' => $room->updatedAt,
         ]);
     }
+    public function actionAdminDumpTable(array $data) {
+        $user = User::current();
+        if (!AdminUtil::isUidAdmin($user->uid)) {
+            SocketUtil::pushError('403');
+            return;
+        }
+        SocketUtil::pushSuccessWithData(AdminUtil::getAllTableData());
+    }
+    
 }

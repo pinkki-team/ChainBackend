@@ -37,7 +37,7 @@ $roomTable->create();
 $roomTable->set('test', [
     'id' => 'test',
     'name' => '测试房间',
-    'status' => 1,
+    'status' => \App\Entity\Room::STATUS_WAITING,
     'updatedAt' => time(),
     'wordGroupType' => \App\Entity\Room::WORD_GROUP_DEFAULT,
 ]);
@@ -60,10 +60,10 @@ $httpService = new \App\Service\HttpService();
 $server->on('open', function (\Swoole\WebSocket\Server $server, $request) {
     echo "[{$request->fd}]握手成功\n";
 });
-$server->on('message', function (\Swoole\WebSocket\Server $server, $frame) use($service) {
+$server->on('message', function (\Swoole\WebSocket\Server $server, \Swoole\WebSocket\Frame $frame) use($service) {
     SocketUtil::contextSet(SocketUtil::CTX_SERVER, $server);
     SocketUtil::contextSet(SocketUtil::CTX_FD, $frame->fd);
-    echo "[{$frame->fd}]原始消息:{$frame->data}\n";
+//    echo "[{$frame->fd}]原始消息:{$frame->data}\n";
     $service->onMessage($frame, $frame->fd);
 });
 $server->on('request', function (Swoole\Http\Request $request, Swoole\Http\Response $response) use($httpService) {
@@ -94,6 +94,7 @@ $server->on('close', function (\Swoole\WebSocket\Server $server, $fd) use($servi
     $wsStatus = $server->connection_info($fd)['websocket_status'];
     if ($wsStatus !== 3) return;
     echo "[{$fd}]客户端关闭\n";
+    SocketUtil::contextSet(SocketUtil::CTX_SERVER, $server);
     $service->onFdClose($fd);
 });
 

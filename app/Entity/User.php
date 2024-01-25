@@ -32,7 +32,7 @@ class User extends AbstractEntity {
     /** @var int */
     public $updatedAt;
     /** @var int */
-    public $ping;
+    public $ping; //-1为初始化状态
 
     public static function mainKey(): string {
         return 'uid';

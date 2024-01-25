@@ -8,7 +8,8 @@ use App\Exception\LoginException;
 use Swoole\Table;
 
 class FdControl {
-    public static function fd2Uid(string $fd): ?string {
+    public static function fd2Uid(int $fd): ?string {
+        $fd = strval($fd);
         //先找fd
         $fdTable = TableUtil::fdTable();
         $uid = $fdTable->get($fd, 'uid');
@@ -67,6 +68,7 @@ class FdControl {
                 'name' => $name,
                 'activeFd' => intval($fd),
                 'roomStatus' => User::ROOM_STATUS_NONE,
+                'ping' => -1,
             ]);
         } else {
             //重连到用户

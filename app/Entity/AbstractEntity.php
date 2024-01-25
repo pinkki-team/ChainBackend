@@ -33,4 +33,16 @@ abstract class AbstractEntity {
         }
         return false;
     }
+    public function updateValues(array $values): bool {
+        $fixedValues = [];
+        foreach ($values as $key => $value) {
+            if (property_exists($this, $key)) {
+                $fixedValues[$key] = $value;
+                $this->{$key} = $value;
+            }
+        }
+        $mainKeyValue = $this->{static::mainKey()};
+        static::getTable()->set($mainKeyValue, $fixedValues);
+        return false;
+    }
 }
