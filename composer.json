@@ -13,7 +13,6 @@
         "ext-json": "*",
         "ext-zlib": "*",
         "ext-openssl": "*",
-        "ext-redis": "*",
         "illuminate/support": "^8.83",
         "vlucas/phpdotenv": "^5.5"
     },
