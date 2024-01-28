@@ -177,7 +177,7 @@ class SocketService extends BaseService {
             SocketUtil::pushError("房间已不存在!");
             return;
         }
-        RoomUtil::pushChat($room, $user, $content);
+        RoomUtil::pushChat($room->id, $user, $content);
         SocketUtil::pushSuccess();
     }
     
