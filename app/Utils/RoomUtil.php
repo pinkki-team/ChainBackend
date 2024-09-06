@@ -71,7 +71,6 @@ class RoomUtil {
         else self::pushUserLeftDisconnected($roomId, $user);
     }
     
-    
     //推送
     public static function pushSetAdmin(string $roomId, User $user) {
         $msg = new RoomMessage();
@@ -80,6 +79,7 @@ class RoomUtil {
         $msg->fromUserName = $user->name;
         self::pushRoomMessage($roomId, $msg);
     }
+    //用户加入
     public static function pushUserJoin(string $roomId, User $user) {
         $msg = new RoomMessage();
         $msg->type = RoomMessage::TYPE_USER_JOIN;

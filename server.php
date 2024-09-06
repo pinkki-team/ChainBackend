@@ -44,7 +44,8 @@ $roomTable->set('test', [
 
 /********************************** 服务 **********************************/
 
-$server = new \Swoole\WebSocket\Server("0.0.0.0", 9999);
+$port = (int)env('SERVER_PORT', 9999);
+$server = new \Swoole\WebSocket\Server("0.0.0.0", $port);
 $server->set([
     'worker_num' => 2,
     'heartbeat_check_interval' => 10,

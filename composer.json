@@ -11,6 +11,7 @@
     "require": {
         "php": ">=7.4",
         "ext-json": "*",
+        "ext-swoole": "*",
         "ext-zlib": "*",
         "ext-openssl": "*",
         "illuminate/support": "^8.83",
