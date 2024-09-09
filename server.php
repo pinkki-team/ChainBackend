@@ -1,4 +1,6 @@
-<?php
+<?php /** @noinspection PhpFullyQualifiedNameUsageInspection */
+
+/** @noinspection PhpDynamicFieldDeclarationInspection */
 
 use App\Utils\SocketUtil;
 
@@ -57,9 +59,8 @@ $server->roomTable = $roomTable;
 echo "服务器启动\n";
 
 $service = new \App\Service\SocketService();
-$httpService = new \App\Service\HttpService();
 $server->on('open', function (\Swoole\WebSocket\Server $server, $request) {
-    echo "[{$request->fd}]握手成功\n";
+    echo "[$request->fd]握手成功\n";
 });
 $server->on('message', function (\Swoole\WebSocket\Server $server, \Swoole\WebSocket\Frame $frame) use($service) {
     SocketUtil::contextSet(SocketUtil::CTX_SERVER, $server);
@@ -67,9 +68,11 @@ $server->on('message', function (\Swoole\WebSocket\Server $server, \Swoole\WebSo
 //    echo "[{$frame->fd}]原始消息:{$frame->data}\n";
     $service->onMessage($frame, $frame->fd);
 });
-$server->on('request', function (Swoole\Http\Request $request, Swoole\Http\Response $response) use($httpService) {
+$server->on('request', function (Swoole\Http\Request $request, Swoole\Http\Response $response) {
+    $httpService = new \App\Service\HttpService();
     global $server;
     $httpService->response = $response;
+    $httpService->request = $request;
     $response->header('Access-Control-Allow-Origin', '*');
     $response->header('Access-Control-Allow-Headers', '*');
     $response->header('Access-Control-Allow-Methods', '*');
@@ -85,7 +88,7 @@ $server->on('request', function (Swoole\Http\Request $request, Swoole\Http\Respo
     $target = $request->get['target'] ?? null;
     switch ($target) {
         case 'roomInfo':
-            $httpService->actionRoomInfo($request, $response);
+            $httpService->actionRoomInfo();
             return;
     }
     $response->setStatusCode(404);
@@ -94,7 +97,7 @@ $server->on('request', function (Swoole\Http\Request $request, Swoole\Http\Respo
 $server->on('close', function (\Swoole\WebSocket\Server $server, $fd) use($service) {
     $wsStatus = $server->connection_info($fd)['websocket_status'];
     if ($wsStatus !== 3) return;
-    echo "[{$fd}]客户端关闭\n";
+    echo "[$fd]客户端关闭\n";
     SocketUtil::contextSet(SocketUtil::CTX_SERVER, $server);
     $service->onFdClose($fd);
 });

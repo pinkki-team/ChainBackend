@@ -2,19 +2,15 @@
 
 namespace App\Service;
 
-use App\Entity\Room;
-use App\Entity\User;
-use App\Exception\LoginException;
-use App\Utils\FdControl;
 use App\Utils\RoomUtil;
-use App\Utils\SocketUtil;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
-use Swoole\WebSocket\Frame;
 
 class HttpService extends BaseService {
     /** @var Response */
     public $response;
+    /** @var Request */
+    public $request;
     const BASE_HEADER_AUTH_KEY = 'authorization';
     public function headerCheck(Request $request): bool {
         $authRes = env('BASE_HEADER_AUTH_KEY');
@@ -22,8 +18,8 @@ class HttpService extends BaseService {
         return $authRes === $headerRes;
     }
     
-    public function actionRoomInfo(Request $request) {
-        $roomId = $request->get['roomId'] ?? null;
+    public function actionRoomInfo() {
+        $roomId = $this->request->get['roomId'] ?? null;
 //        $this->log("查询RoomInfo:" . $roomId);
         if (is_null($roomId)) {
             $this->response422();
