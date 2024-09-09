@@ -13,7 +13,9 @@ class User extends AbstractEntity {
         $contextUser = SocketUtil::contextUser();
         if (!is_null($contextUser)) return $contextUser;
         $contextUid = SocketUtil::contextUid();
-        return FdControl::uid2User($contextUid);
+        $contextUser = FdControl::uid2User($contextUid);
+        SocketUtil::contextSet(SocketUtil::CTX_USER, $contextUser);
+        return $contextUser;
     }
     const ROOM_STATUS_NONE = 0; //正常不在房间里
     const ROOM_STATUS_NORMAL = 1; //正常在房间里

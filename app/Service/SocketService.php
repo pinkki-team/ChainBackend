@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Exception\LoginException;
 use App\Service\Actions\AdminActions;
 use App\Utils\AdminUtil;
+use App\Utils\ChatUtil;
 use App\Utils\FdControl;
 use App\Utils\RoomUtil;
 use App\Utils\SocketUtil;
@@ -152,7 +153,6 @@ class SocketService extends BaseService {
     
     public function actionChat(array $data) {
         $user = User::current();
-        
         $roomId = $data['roomId'] ?? null;
         if ($user->roomId !== $roomId) {
             SocketUtil::pushError("您已不在房间内!");
@@ -167,8 +167,9 @@ class SocketService extends BaseService {
         }
         
         $content = $data['content'];
-        if (mb_strlen($content) > 50) {
-            SocketUtil::pushError("文字过长!");
+        $chatReviewRes = ChatUtil::reviewChat($content);
+        if (is_string($chatReviewRes)) {
+            SocketUtil::pushError($chatReviewRes);
             return;
         }
         
