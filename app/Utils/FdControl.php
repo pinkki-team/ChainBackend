@@ -57,6 +57,10 @@ class FdControl {
         if ($findUid === false) {
             //新用户
             $fdTable->set($fd, ['fd' => intval($fd), 'uid' => $uid]);
+        } else {
+            if ($findUid !== $uid) {
+                //TODO fd不变而uid变化
+            }
         }
         //找uid
         $userTable = TableUtil::userTable();

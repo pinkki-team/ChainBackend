@@ -21,7 +21,9 @@ class SocketUtil {
         if (!is_null($context)) $context[$key] = $value;
     }
     public static function contextServer(): Server {
-        return self::contextGet(self::CTX_SERVER);
+        $server = self::contextGet(self::CTX_SERVER);
+        if (is_null($server)) $server = $GLOBALS['server'] ?? null;
+        return $server;
     }
     public static function contextFd(): int {
         return self::contextGet(self::CTX_FD);
@@ -33,7 +35,7 @@ class SocketUtil {
         return self::contextGet(self::CTX_USER);
     }
     public static function contextRequest(): array {
-        return self::contextGet(self::CTX_REQUEST);
+        return self::contextGet(self::CTX_REQUEST, []);
     }
     public static function contextRequestId(): ?string {
         return self::contextRequest()['requestId'] ?? null;

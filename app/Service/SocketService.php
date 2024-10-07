@@ -22,6 +22,30 @@ class SocketService extends BaseService {
         'login',
         'ping'
     ];
+
+
+    public function onConnect(
+        int $fd,
+        array $get
+    ) {
+        $name = $get['name'] ?? null;
+        $roomId = $get['rid'] ?? null;
+        $uid = $get['uid'] ?? null;
+
+        var_dump("fd: $fd, name: $name, roomId: $roomId, uid: $uid");
+        if ($name && $uid && $fd) {
+            FdControl::login($fd, $uid, $name);
+        }
+        if ($roomId) {
+            $room = RoomUtil::getRoom($roomId, true);
+            if (is_null($room)) {
+                SocketUtil::pushError('房间不存在');
+                return;
+            }
+            SocketUtil::push($fd, 'init', $room->infoArray());
+        }
+
+    }
     public function onMessage(Frame $frame, int $fd) {
         $raw = json_decode($frame->data, true);
         if (empty($raw)) return;

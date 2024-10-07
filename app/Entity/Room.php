@@ -31,6 +31,7 @@ class Room extends AbstractEntity {
     
     public function infoArray(): array {
         $raw = (array)$this;
+        $raw['max'] = 16;
         //词库关联
         return $raw;
     }

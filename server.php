@@ -59,8 +59,12 @@ $server->roomTable = $roomTable;
 echo "服务器启动\n";
 
 $service = new \App\Service\SocketService();
-$server->on('open', function (\Swoole\WebSocket\Server $server, $request) {
-    echo "[$request->fd]握手成功\n";
+$httpService = new \App\Service\HttpService();
+$server->on('open', function (\Swoole\WebSocket\Server $server, \Swoole\Http\Request $request) use($service) {
+    echo "[{$request->fd}]握手成功\n";
+    SocketUtil::contextSet(SocketUtil::CTX_SERVER, $server);
+    SocketUtil::contextSet(SocketUtil::CTX_FD, $request->fd);
+    $service->onConnect($request->fd, $request->get);
 });
 $server->on('message', function (\Swoole\WebSocket\Server $server, \Swoole\WebSocket\Frame $frame) use($service) {
     SocketUtil::contextSet(SocketUtil::CTX_SERVER, $server);
@@ -68,8 +72,7 @@ $server->on('message', function (\Swoole\WebSocket\Server $server, \Swoole\WebSo
 //    echo "[{$frame->fd}]原始消息:{$frame->data}\n";
     $service->onMessage($frame, $frame->fd);
 });
-$server->on('request', function (Swoole\Http\Request $request, Swoole\Http\Response $response) {
-    $httpService = new \App\Service\HttpService();
+$server->on('request', function (Swoole\Http\Request $request, Swoole\Http\Response $response) use($httpService) {
     global $server;
     $httpService->response = $response;
     $httpService->request = $request;
@@ -97,24 +100,26 @@ $server->on('request', function (Swoole\Http\Request $request, Swoole\Http\Respo
 $server->on('close', function (\Swoole\WebSocket\Server $server, $fd) use($service) {
     $wsStatus = $server->connection_info($fd)['websocket_status'];
     if ($wsStatus !== 3) return;
-    echo "[$fd]客户端关闭\n";
+    echo "[{$fd}]客户端关闭\n";
     SocketUtil::contextSet(SocketUtil::CTX_SERVER, $server);
     $service->onFdClose($fd);
 });
 
 
-//function checkAll($server) {
-//    SocketUtil::contextSet(SocketUtil::CTX_SERVER, $server);
-//    echo "状态检查\n";
-//    echo \App\Utils\TableUtil::genTableStats();
-//    echo "\n";
-//}
-//\Swoole\Timer::after(1000, function() use($server) {
-//    checkAll($server);
-//});
-//\Swoole\Timer::tick(30 * 1000, function() use($server) {
-//    checkAll($server);
-//});
+SocketUtil::contextSet(SocketUtil::CTX_SERVER, $server);
+
+$GLOBALS['server'] = $server;
+function checkAll($server) {
+    echo "状态检查\n";
+    echo \App\Utils\TableUtil::genTableStats();
+    echo "\n";
+}
+\Swoole\Timer::after(1000, function() use($server) {
+    checkAll($server);
+});
+\Swoole\Timer::tick(30 * 1000, function() use($server) {
+    checkAll($server);
+});
 
 
 
