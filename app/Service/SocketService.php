@@ -144,13 +144,10 @@ class SocketService extends BaseService {
         }
         
         //新加入逻辑
-        //判断房间是否可加入
-        if ($room->status !== Room::STATUS_WAITING) {
-            SocketUtil::pushError('游戏已经开始，无法中途加入');
-            return;
-        }
-        if (RoomUtil::getMemberCount($roomId) >= RoomUtil::getMaxMemberCount($roomId)) {
-            SocketUtil::pushError('房间人数已满');
+        //判断房间是否可加入(纯房间角度:满人,状态)
+        $canJoinRes = $room->canJoinRes();
+        if (is_string($canJoinRes)) {
+            SocketUtil::pushError($canJoinRes);
             return;
         }
         

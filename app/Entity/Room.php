@@ -3,11 +3,18 @@
 namespace App\Entity;
 
 use App\Entity\Word\DefaultWordProvider;
+use App\Utils\RoomUtil;
+use App\Utils\SocketUtil;
 
 class Room extends AbstractEntity {
     const TABLE = 'roomTable';
     
+    
     const STATUS_WAITING = 0; //初始状态，正在等待
+    
+    
+    
+    
     public $id;
     public $name;
     public $status;
@@ -19,6 +26,19 @@ class Room extends AbstractEntity {
     public $wordGroupId;
     
     public $members = [];
+    
+    
+    //若返回null说明可加入
+    public function canJoinRes(): ?string {
+        if ($this->status !== Room::STATUS_WAITING) {
+            return '游戏已经开始，无法中途加入';
+        }
+        if (RoomUtil::getMemberCount($this->id) >= RoomUtil::getMaxMemberCount($this->id)) {
+            return '房间人数已满';
+        }
+        return null;
+    }
+    
     
     public function generateWords(int $count): array {
         switch ($this->wordGroupType) {
