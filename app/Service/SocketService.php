@@ -39,7 +39,7 @@ class SocketService extends BaseService {
         if ($roomId) {
             $room = RoomUtil::getRoom($roomId, true);
             if (is_null($room)) {
-                SocketUtil::pushError('房间不存在');
+                SocketUtil::push($fd, 'initRoomNotExist');
                 return;
             }
             SocketUtil::push($fd, 'init', $room->infoArray());

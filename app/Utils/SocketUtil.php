@@ -57,7 +57,7 @@ class SocketUtil {
             }
         }
     }
-    public static function push(int $fd, string $action, array $data, ?Server $server = null) {
+    public static function push(int $fd, string $action, array $data = [], ?Server $server = null) {
         $raw = [
             'action' => $action,
             'data' => $data
