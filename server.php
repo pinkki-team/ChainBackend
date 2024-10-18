@@ -114,12 +114,12 @@ function checkAll($server) {
     echo \App\Utils\TableUtil::genTableStats();
     echo "\n";
 }
-\Swoole\Timer::after(1000, function() use($server) {
-    checkAll($server);
-});
-\Swoole\Timer::tick(30 * 1000, function() use($server) {
-    checkAll($server);
-});
+//\Swoole\Timer::after(1000, function() use($server) {
+//    checkAll($server);
+//});
+//\Swoole\Timer::tick(30 * 1000, function() use($server) {
+//    checkAll($server);
+//});
 
 
 
