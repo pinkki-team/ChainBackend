@@ -52,7 +52,7 @@ class Room extends AbstractEntity {
     public function infoArray(): array {
         $raw = (array)$this;
         $raw['max'] = 16;
-        $raw['canJoin'] = $this->canJoinRes() === null;
+        $raw['canJoin'] = is_null($this->canJoinRes());
         //词库关联
         return $raw;
     }

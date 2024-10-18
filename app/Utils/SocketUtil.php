@@ -62,34 +62,24 @@ class SocketUtil {
             'action' => $action,
             'data' => $data
         ];
+        $requestId = SocketUtil::contextRequestId();
+        if ($requestId) $raw['requestId'] = $requestId;
         if (is_null($server)) $server = self::contextServer();
         if (!is_null($server)) $server->push($fd, json_encode($raw, JSON_UNESCAPED_UNICODE));
     }
     public static function pushSuccess() {
-        self::push(SocketUtil::contextFd(), 'success', [
-            'requestId' => SocketUtil::contextRequestId()
-        ]);
+        self::push(SocketUtil::contextFd(), 'success');
     }
     public static function pushSuccessWithData(array $data) {
-        $data['requestId'] = SocketUtil::contextRequestId();
+        
         self::push(SocketUtil::contextFd(), 'success', $data);
     }
-    public static function pushResponse(int $fd, array $request, string $action, array $data) {
-        $data['requestId'] = $request['requestId'] ?? null;
-        self::push($fd, $action, $data);
-    }
     public static function push403() {
-        self::push(SocketUtil::contextFd(), '403', [
-            'requestId' => SocketUtil::contextRequestId()
-        ]);
+        self::push(SocketUtil::contextFd(), '403');
     }
     public static function pushError(string $errorMsg = '请求错误') {
         self::push(SocketUtil::contextFd(), 'error', [
-            'requestId' => SocketUtil::contextRequestId(),
-            'elementMessage' => [
-                'type' => 'error',
-                'message' => $errorMsg
-            ]
+            'message' => $errorMsg
         ]);
     }
 }
