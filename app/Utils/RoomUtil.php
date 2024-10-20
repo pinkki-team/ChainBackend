@@ -32,7 +32,7 @@ class RoomUtil {
             $user = User::fromModel($userModel);
             if (
                 $user->roomId === $roomId
-                && in_array($user->roomStatus, [User::ROOM_STATUS_NORMAL, User::ROOM_STATUS_DISCONNECTED])
+                && in_array($user->roomStatus, [User::ROOM_STATUS_NORMAL, User::ROOM_STATUS_DISCONNECTED_1, User::ROOM_STATUS_DISCONNECTED_2])
             ) {
                 $res []= $user;
             }
@@ -61,9 +61,17 @@ class RoomUtil {
     public static function userEnterRoomEvent(User $user, string $roomId) {
         self::pushUserJoin($roomId, $user);
     }
+    //用户深断线事件
+    public static function userDisconnectEvent(User $user, string $roomId) {
+        self::pushUserDisconnect($roomId, $user);
+    }
     //用户重连房间事件
-    public static function userReconnectEvent(User $user, string $roomId) {
-        //TODO
+    public static function userReconnectEvent(User $user, string $roomId, int $reconnectType) {
+        if ($reconnectType === 1) {
+            self::pushUserReconnect1($roomId, $user);
+        } else {
+            self::pushUserReconnect2($roomId, $user);
+        }
     }
     //用户彻底离开房间
     public static function userLeftRoomEvent(User $user, string $roomId, bool $isIntent) {
@@ -83,6 +91,30 @@ class RoomUtil {
     public static function pushUserJoin(string $roomId, User $user) {
         $msg = new RoomMessage();
         $msg->type = RoomMessage::TYPE_USER_JOIN;
+        $msg->fromUserId = $user->uid;
+        $msg->fromUserName = $user->name;
+        self::pushRoomMessage($roomId, $msg);
+    }
+    //用户深断线
+    public static function pushUserDisconnect(string $roomId, User $user) {
+        $msg = new RoomMessage();
+        $msg->type = RoomMessage::TYPE_USER_DISCONNECT;
+        $msg->fromUserId = $user->uid;
+        $msg->fromUserName = $user->name;
+        self::pushRoomMessage($roomId, $msg);
+    }
+    //用户回归
+    public static function pushUserReconnect1(string $roomId, User $user) {
+        $msg = new RoomMessage();
+        $msg->type = RoomMessage::TYPE_USER_RECONNECT_1;
+        $msg->fromUserId = $user->uid;
+        $msg->fromUserName = $user->name;
+        self::pushRoomMessage($roomId, $msg);
+    }
+    //用户回归
+    public static function pushUserReconnect2(string $roomId, User $user) {
+        $msg = new RoomMessage();
+        $msg->type = RoomMessage::TYPE_USER_RECONNECT_2;
         $msg->fromUserId = $user->uid;
         $msg->fromUserName = $user->name;
         self::pushRoomMessage($roomId, $msg);

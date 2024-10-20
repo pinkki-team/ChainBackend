@@ -50,7 +50,7 @@ class FdControl {
         if (is_null($user)) throw new BadFDException();
         return $user;
     }
-    public static function login(string $fd, string $uid, string $name) {
+    public static function login(string $fd, string $uid, string $name, array $extra = []) {
         //先找fd
         $fdTable = TableUtil::fdTable();
         $findUid = $fdTable->get($fd, 'uid');
@@ -73,6 +73,7 @@ class FdControl {
                 'activeFd' => intval($fd),
                 'roomStatus' => User::ROOM_STATUS_NONE,
                 'ping' => -1,
+                'extra' => json_encode($extra),
             ]);
         } else {
             //重连到用户

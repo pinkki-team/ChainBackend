@@ -7,7 +7,8 @@ use App\Utils\SocketUtil;
 
 class User extends AbstractEntity {
     const TABLE = 'userTable';
-    
+    const JSON_KEYS = ['extra'];
+
     //使用这个方法，默认一定有user
     public static function current(): User {
         $contextUser = SocketUtil::contextUser();
@@ -19,8 +20,10 @@ class User extends AbstractEntity {
     }
     const ROOM_STATUS_NONE = 0; //正常不在房间里
     const ROOM_STATUS_NORMAL = 1; //正常在房间里
-    const ROOM_STATUS_DISCONNECTED = 2; //断线
-    const ROOM_STATUS_ALREADY_DISCONNECTED = 3; //被自动脚本判断为断线。客户端拿到这个状态后，会提醒用户已断线更新为0
+    const ROOM_STATUS_DISCONNECTED_1 = 2; //浅断线(socket中断)
+    const ROOM_STATUS_DISCONNECTED_2 = 3; //深断线(浅断线过久)
+
+    const EKEY_SOURCE = 'source';
 
     /** @var string */
     public $uid;
@@ -35,8 +38,11 @@ class User extends AbstractEntity {
     public $updatedAt;
     /** @var int */
     public $ping; //-1为初始化状态
+    /** @var array */
+    public $extra;
 
     public static function mainKey(): string {
         return 'uid';
     }
+
 }

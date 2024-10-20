@@ -9,6 +9,7 @@ use App\Service\Actions\AdminActions;
 use App\Utils\AdminUtil;
 use App\Utils\ChatUtil;
 use App\Utils\FdControl;
+use App\Utils\ReconnectUtil;
 use App\Utils\RoomUtil;
 use App\Utils\SocketUtil;
 use App\Utils\TableUtil;
@@ -32,9 +33,16 @@ class SocketService extends BaseService {
         $roomId = $get['rid'] ?? null;
         $uid = $get['uid'] ?? null;
 
-        var_dump("fd: $fd, name: $name, roomId: $roomId, uid: $uid");
+
+        //extra字段
+        $extra = [];
+        if (!is_null($source = $get['source'] ?? null)) {
+            $extra[User::EKEY_SOURCE] = $source;
+        }
+
+//        var_dump("fd: $fd, name: $name, roomId: $roomId, uid: $uid");
         if ($name && $uid && $fd) {
-            FdControl::login($fd, $uid, $name);
+            FdControl::login($fd, $uid, $name, $extra);
         }
         if ($roomId) {
             $room = RoomUtil::getRoom($roomId, true);
@@ -99,8 +107,9 @@ class SocketService extends BaseService {
             SocketUtil::pushError('房间不存在');
             return;
         }
-        
+
         $isReconnect = false;
+        $reconnectType = 1;
         $res = [
             'status' => self::ERS_STATUS_NORMAL,
         ];
@@ -116,29 +125,33 @@ class SocketService extends BaseService {
                     RoomUtil::userLeftRoomEvent($user, $roomId, true);
                 }
                 break;
-            case User::ROOM_STATUS_DISCONNECTED:
+            case User::ROOM_STATUS_DISCONNECTED_1:
+            case User::ROOM_STATUS_DISCONNECTED_2:
                 if ($user->roomId === $roomId) {
                     //正常重连
                     $isReconnect = true;
-                    return;
+                    //深断线的用户，回到房间需要推送重连通知
+                    if ($user->roomStatus === User::ROOM_STATUS_DISCONNECTED_2) {
+                        $reconnectType = 2;
+                    }
                 } else {
                     //更换房间
                     RoomUtil::userLeftRoomEvent($user, $roomId, true);
                 }
                 break;
-            case User::ROOM_STATUS_ALREADY_DISCONNECTED:
             case User::ROOM_STATUS_NONE:
                 //这两种情况，用户一定没有roomId，就正常加入
                 break;
         }
         
         if ($isReconnect) {
+            $res['room'] = $room->infoArray();
             $res['status'] = self::ERS_STATUS_RECONNECT;
             $user->updateValues([
                 'updatedAt' => time(),
                 'roomStatus' => User::ROOM_STATUS_NORMAL,
             ]);
-            RoomUtil::userReconnectEvent($user, $roomId);
+            RoomUtil::userReconnectEvent($user, $roomId, $reconnectType);
             SocketUtil::pushSuccessWithData($res);
             return;
         }
@@ -179,13 +192,7 @@ class SocketService extends BaseService {
             SocketUtil::pushError("您已不在房间内!");
             return;
         }
-        if ($user->roomStatus === User::ROOM_STATUS_DISCONNECTED) {
-            $user->updateValues([
-                'updatedAt' => time(),
-                'roomStatus' => User::ROOM_STATUS_NORMAL,
-            ]);
-            RoomUtil::userReconnectEvent($user, $roomId);
-        }
+        ReconnectUtil::check($user, $roomId);
         
         $content = $data['content'];
         $chatReviewRes = ChatUtil::reviewChat($content);
@@ -210,6 +217,13 @@ class SocketService extends BaseService {
             SocketUtil::pushError("您已不在房间内!");
             return;
         }
+        if (!in_array($user->roomStatus, [
+            User::ROOM_STATUS_NORMAL,
+            User::ROOM_STATUS_DISCONNECTED_1,
+            User::ROOM_STATUS_DISCONNECTED_2,
+        ])) {
+
+        }
         RoomUtil::userLeftRoomEvent($user, $roomId, true);
         $user->updateValues([
             'roomId' => null,
@@ -230,9 +244,12 @@ class SocketService extends BaseService {
         if (!is_null($uid)) {
             $user = FdControl::uid2User($uid);
             if (!is_null($user)) {
-                
                 if (!empty($user->roomId)) {
-                    //处理用户断线
+                    //浅断线,更新状态为浅断线，浅断线持续一定事件后，处理为深断线并且做后续操作
+                    $user->updateValues([
+                        'roomStatus' => User::ROOM_STATUS_DISCONNECTED_1,
+                        'updatedAt' => time()
+                    ]);
                 }
                 if ($user->activeFd === $fd) {
                     $user->updateValue('activeFd', -1);

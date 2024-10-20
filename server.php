@@ -24,6 +24,7 @@ $userTable->column('roomId', Swoole\Table::TYPE_STRING, 8); //所在房间，断
 $userTable->column('roomStatus', Swoole\Table::TYPE_INT); //当前状态 脚本会定时更新
 $userTable->column('updatedAt', Swoole\Table::TYPE_INT); //活跃时间timestamp
 $userTable->column('ping', Swoole\Table::TYPE_INT);
+$userTable->column('extra', Swoole\Table::TYPE_STRING, 256); //json格式
 $userTable->create();
 
 $roomTable = new Swoole\Table(8);
