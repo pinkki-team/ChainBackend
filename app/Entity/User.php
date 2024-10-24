@@ -5,7 +5,8 @@ namespace App\Entity;
 use App\Utils\FdControl;
 use App\Utils\SocketUtil;
 
-class User extends AbstractEntity {
+class User extends AbstractEntity implements HasExtra {
+    use HasExtraTrait;
     const TABLE = 'userTable';
     const JSON_KEYS = ['extra'];
 
@@ -24,6 +25,7 @@ class User extends AbstractEntity {
     const ROOM_STATUS_DISCONNECTED_2 = 3; //深断线(浅断线过久)
 
     const EKEY_SOURCE = 'source';
+    const EKEY_DISCONNECT_TIMER = 'disconnectTimer';
 
     /** @var string */
     public $uid;
@@ -45,4 +47,10 @@ class User extends AbstractEntity {
         return 'uid';
     }
 
+    public function getExtra(): array {
+        return $this->extra;
+    }
+    public function setExtra(array $extra) {
+        $this->updateValue('extra', $extra);
+    }
 }

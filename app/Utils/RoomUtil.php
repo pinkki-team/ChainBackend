@@ -73,10 +73,10 @@ class RoomUtil {
             self::pushUserReconnect2($roomId, $user);
         }
     }
-    //用户彻底离开房间
+    //用户主动离开房间
     public static function userLeftRoomEvent(User $user, string $roomId, bool $isIntent) {
         if ($isIntent) self::pushUserLeftIntent($roomId, $user);
-        else self::pushUserLeftDisconnected($roomId, $user);
+        else self::pushUserLeftIntent($roomId, $user);
     }
     
     //推送
@@ -122,13 +122,6 @@ class RoomUtil {
     public static function pushUserLeftIntent(string $roomId, User $user) {
         $msg = new RoomMessage();
         $msg->type = RoomMessage::TYPE_USER_LEFT_INTENT;
-        $msg->fromUserId = $user->uid;
-        $msg->fromUserName = $user->name;
-        self::pushRoomMessage($roomId, $msg);
-    }
-    public static function pushUserLeftDisconnected(string $roomId, User $user) {
-        $msg = new RoomMessage();
-        $msg->type = RoomMessage::TYPE_USER_LEFT_DISCONNECTED;
         $msg->fromUserId = $user->uid;
         $msg->fromUserName = $user->name;
         self::pushRoomMessage($roomId, $msg);

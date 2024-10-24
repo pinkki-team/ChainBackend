@@ -151,6 +151,7 @@ class SocketService extends BaseService {
                 'updatedAt' => time(),
                 'roomStatus' => User::ROOM_STATUS_NORMAL,
             ]);
+            ReconnectUtil::reconnectClearTimer($user, $roomId);
             RoomUtil::userReconnectEvent($user, $roomId, $reconnectType);
             SocketUtil::pushSuccessWithData($res);
             return;
@@ -222,7 +223,8 @@ class SocketService extends BaseService {
             User::ROOM_STATUS_DISCONNECTED_1,
             User::ROOM_STATUS_DISCONNECTED_2,
         ])) {
-
+            SocketUtil::pushError("您已不在房间内!");
+            return;
         }
         RoomUtil::userLeftRoomEvent($user, $roomId, true);
         $user->updateValues([
@@ -244,12 +246,9 @@ class SocketService extends BaseService {
         if (!is_null($uid)) {
             $user = FdControl::uid2User($uid);
             if (!is_null($user)) {
-                if (!empty($user->roomId)) {
+                if ($user->roomStatus === User::ROOM_STATUS_NORMAL && !empty($user->roomId)) {
                     //浅断线,更新状态为浅断线，浅断线持续一定事件后，处理为深断线并且做后续操作
-                    $user->updateValues([
-                        'roomStatus' => User::ROOM_STATUS_DISCONNECTED_1,
-                        'updatedAt' => time()
-                    ]);
+                    ReconnectUtil::disconnect1($user, $user->roomId);
                 }
                 if ($user->activeFd === $fd) {
                     $user->updateValue('activeFd', -1);

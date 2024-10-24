@@ -7,6 +7,7 @@ class RoomMessage {
     const TYPE_SET_ADMIN = 2; //用户成为房主
     const TYPE_USER_JOIN = 3; //用户进入房间
     const TYPE_USER_LEFT_INTENT = 4; //用户主动离开房间
+    /** @deprecated  */
     const TYPE_USER_LEFT_DISCONNECTED = 5; //用户离开房间(断线时间过长)
     const TYPE_USER_DISCONNECT = 6; //用户深断线
     const TYPE_USER_RECONNECT_1 = 7; //用户从浅断线中回归
