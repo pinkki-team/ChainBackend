@@ -93,6 +93,7 @@ class RoomUtil {
         $msg->type = RoomMessage::TYPE_USER_JOIN;
         $msg->fromUserId = $user->uid;
         $msg->fromUserName = $user->name;
+        $msg->fromUser = $user;
         self::pushRoomMessage($roomId, $msg);
     }
     //用户深断线

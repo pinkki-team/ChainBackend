@@ -12,7 +12,7 @@ class ReconnectUtil {
     const DISCONNECT_REAL_TIME = 10; //超过30秒浅断线就会深断线
     
     public static function reconnectClearTimer(User $user, string $roomId) {
-        $timerId = $user->extraGet(User::EKEY_DISCONNECT_TIMER);
+        $timerId = $user->extraGet(User::EKEY_DISCONNECT_TIMER); 
         if ($timerId) {
             $user->extraDel(User::EKEY_DISCONNECT_TIMER);
         }
@@ -34,10 +34,10 @@ class ReconnectUtil {
         ]);
     }
     
-    public static function disconnectTimed(int $timerId, string $uid, string $roomId) {
+    public static function disconnectTimed(string $timerId, string $uid, string $roomId) {
         $user = FdControl::uid2User($uid);
         if (!$user) return;
-        if ($user->extraGet(User::EKEY_DISCONNECT_TIMER, -1) !== $timerId) return;
+        if ($user->extraGet(User::EKEY_DISCONNECT_TIMER) !== $timerId) return;
         if ($user->roomId !== $roomId) return;
         if ($user->roomStatus !== User::ROOM_STATUS_DISCONNECTED_1) return;
         $user->updateValues([

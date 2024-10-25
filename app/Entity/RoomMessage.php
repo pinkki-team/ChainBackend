@@ -16,14 +16,17 @@ class RoomMessage {
     public $type;
     public $fromUserId;
     public $fromUserName;
+    /** @var User */
+    public $fromUser;
     public $content;
     
     public function toArray(): array {
         switch ($this->type) {
             case self::TYPE_CHAT:
                 return [$this->type, $this->fromUserId, $this->fromUserName, $this->content];
-            case self::TYPE_SET_ADMIN:
             case self::TYPE_USER_JOIN:
+                return [$this->type, (array)$this->fromUser];
+            case self::TYPE_SET_ADMIN:
             case self::TYPE_USER_LEFT_DISCONNECTED:
             case self::TYPE_USER_LEFT_INTENT:
             case self::TYPE_USER_DISCONNECT:

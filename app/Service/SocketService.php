@@ -234,7 +234,15 @@ class SocketService extends BaseService {
         SocketUtil::pushSuccess();
     }
     
-    
+    public function actionSyncRoom(array $data) {
+        $roomId = $data['roomId'];
+        //首先检查房间是否存在
+        $room = RoomUtil::getRoom($roomId, true);
+        if (is_null($room)) {
+            SocketUtil::pushError('房间不存在');
+            return;
+        }
+    }
     
     
     
