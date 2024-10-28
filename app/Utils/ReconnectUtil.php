@@ -10,6 +10,7 @@ use Swoole\Timer;
 class ReconnectUtil {
 
     const DISCONNECT_REAL_TIME = 10; //超过30秒浅断线就会深断线
+    const DISCONNECT_LEFT_TIME = 30; //深断线30秒就会退出房间
     
     public static function reconnectClearTimer(User $user, string $roomId) {
         $timerId = $user->extraGet(User::EKEY_DISCONNECT_TIMER); 
@@ -30,8 +31,8 @@ class ReconnectUtil {
         $user->extraSet(User::EKEY_DISCONNECT_TIMER, $randId);
         $user->updateValues([
             'roomStatus' => User::ROOM_STATUS_DISCONNECTED_1,
-            'updatedAt' => time()
         ]);
+        echo "[用户浅断线]{$user->name}\n";
     }
     
     public static function disconnectTimed(string $timerId, string $uid, string $roomId) {
@@ -40,11 +41,31 @@ class ReconnectUtil {
         if ($user->extraGet(User::EKEY_DISCONNECT_TIMER) !== $timerId) return;
         if ($user->roomId !== $roomId) return;
         if ($user->roomStatus !== User::ROOM_STATUS_DISCONNECTED_1) return;
+        RoomUtil::userDisconnectEvent($user, $roomId);
+        $randId = Str::random(6);
         $user->updateValues([
             'roomStatus' => User::ROOM_STATUS_DISCONNECTED_2,
-            'updatedAt' => time()
         ]);
-        RoomUtil::userDisconnectEvent($user, $roomId);
+        $user->extraSet(User::EKEY_DISCONNECT_TIMER, $randId);
+        Timer::after(self::DISCONNECT_LEFT_TIME * 1000, function ($randId, $uid, $roomId) {
+            ReconnectUtil::disconnectLeftTimed($randId, $uid, $roomId);
+        }, $randId, $uid, $roomId);
+        echo "[用户深断线]{$user->name}\n";
+    }
+
+    public static function disconnectLeftTimed(string $timerId, string $uid, string $roomId) {
+        $user = FdControl::uid2User($uid);
+        if (!$user) return;
+        if ($user->extraGet(User::EKEY_DISCONNECT_TIMER) !== $timerId) return;
+        if ($user->roomId !== $roomId) return;
+        if ($user->roomStatus !== User::ROOM_STATUS_DISCONNECTED_2) return;
+        $user->extraDel(User::EKEY_DISCONNECT_TIMER);
+        $user->updateValues([
+            'roomStatus' => User::ROOM_STATUS_NONE,
+            'roomId' => null
+        ]);
+        RoomUtil::userDisconnectLeftEvent($user, $roomId);
+        echo "[用户深断线退出房间]{$user->name}\n";
     }
     
     public static function check(User $user, string $roomId) {

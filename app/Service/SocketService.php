@@ -79,6 +79,10 @@ class SocketService extends BaseService {
         }
         
         //更新ping
+        $ping = $raw['ping'] ?? null;
+        if ($ping && !is_null($user = SocketUtil::contextUser())) {
+            $user->updateValue('ping', $ping);
+        }
     }
     public function actionPing(array $data) {
         SocketUtil::pushSuccess();
@@ -122,7 +126,7 @@ class SocketService extends BaseService {
                     $isReconnect = true;
                 } else {
                     //更换房间
-                    RoomUtil::userLeftRoomEvent($user, $roomId, true);
+                    RoomUtil::userLeftRoomEvent($user, $roomId);
                 }
                 break;
             case User::ROOM_STATUS_DISCONNECTED_1:
@@ -136,7 +140,7 @@ class SocketService extends BaseService {
                     }
                 } else {
                     //更换房间
-                    RoomUtil::userLeftRoomEvent($user, $roomId, true);
+                    RoomUtil::userLeftRoomEvent($user, $roomId);
                 }
                 break;
             case User::ROOM_STATUS_NONE:
@@ -226,7 +230,7 @@ class SocketService extends BaseService {
             SocketUtil::pushError("您已不在房间内!");
             return;
         }
-        RoomUtil::userLeftRoomEvent($user, $roomId, true);
+        RoomUtil::userLeftRoomEvent($user, $roomId);
         $user->updateValues([
             'roomId' => null,
             'roomStatus' => User::ROOM_STATUS_NONE,

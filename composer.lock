@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c4c9cd4f81ed050d69753a15fa8ebf58",
+    "content-hash": "7321276330f998b77ca29b836ed646fd",
     "packages": [
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -177,6 +177,198 @@
                 }
             ],
             "time": "2023-06-16T13:40:37+00:00"
+        },
+        {
+            "name": "glowy/arrays",
+            "version": "v4.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/glowyphp/arrays.git",
+                "reference": "63db49af8734c958cf439d462f2d2faebd8a290c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/glowyphp/arrays/zipball/63db49af8734c958cf439d462f2d2faebd8a290c",
+                "reference": "63db49af8734c958cf439d462f2d2faebd8a290c",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "glowy/macroable": "^3.0",
+                "php": "^7.4 || ^8.0"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "9.0.0",
+                "pestphp/pest": "^1.21.1",
+                "phpstan/phpstan": "^1.2.0",
+                "symfony/var-dumper": "^5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Glowy\\Arrays\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergey Romanenko",
+                    "email": "sergey.romanenko@flextype.org",
+                    "homepage": "https://github.com/Awilum"
+                }
+            ],
+            "description": "Arrays Component provide a fluent, object-oriented interface for working with arrays, allowing you to chain multiple arrays operations together using a more readable syntax compared to traditional PHP arrays functions.",
+            "keywords": [
+                "arrays",
+                "glowy",
+                "glowyphp",
+                "php",
+                "php-arrays"
+            ],
+            "support": {
+                "issues": "https://github.com/glowyphp/arrays/issues",
+                "source": "https://github.com/glowyphp/arrays"
+            },
+            "time": "2022-06-17T09:14:24+00:00"
+        },
+        {
+            "name": "glowy/macroable",
+            "version": "v3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/glowyphp/macroable.git",
+                "reference": "2c5d901b8bf5ea96cf5238c3c617630f8ae530f9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/glowyphp/macroable/zipball/2c5d901b8bf5ea96cf5238c3c617630f8ae530f9",
+                "reference": "2c5d901b8bf5ea96cf5238c3c617630f8ae530f9",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "php": "^7.4 || ^8.0"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "9.0.0",
+                "pestphp/pest": "^1.21.1",
+                "phpstan/phpstan": "^1.2.0",
+                "symfony/var-dumper": "^5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Glowy\\Macroable\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergey Romanenko",
+                    "email": "sergey.romanenko@flextype.org",
+                    "homepage": "https://github.com/Awilum"
+                }
+            ],
+            "description": "Macroable Component is a trait that, gives you the ability in effect to add new methods to a class at runtime.",
+            "keywords": [
+                "glowy",
+                "glowyphp",
+                "macroable",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/glowyphp/macroable/issues",
+                "source": "https://github.com/glowyphp/macroable"
+            },
+            "time": "2021-12-26T16:11:50+00:00"
+        },
+        {
+            "name": "glowy/strings",
+            "version": "v4.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/glowyphp/strings.git",
+                "reference": "2df0e618749a1a767f5186c2e666da50ece2ce9f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/glowyphp/strings/zipball/2df0e618749a1a767f5186c2e666da50ece2ce9f",
+                "reference": "2df0e618749a1a767f5186c2e666da50ece2ce9f",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "glowy/macroable": "^3.0",
+                "php": "^7.4 || ^8.0"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "9.0.0",
+                "pestphp/pest": "^1.21.3",
+                "phpstan/phpstan": "^1.4.5",
+                "symfony/var-dumper": "^5.4.9"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Glowy\\Strings\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergey Romanenko",
+                    "email": "awilum@msn.com",
+                    "homepage": "https://github.com/Awilum"
+                }
+            ],
+            "description": "Strings Component provide a fluent, object-oriented interface for working with multibyte string, allowing you to chain multiple string operations together using a more readable syntax compared to traditional PHP strings functions.",
+            "keywords": [
+                "glowy",
+                "glowyphp",
+                "php",
+                "php-strings",
+                "strings",
+                "strings-manipulation"
+            ],
+            "support": {
+                "issues": "https://github.com/glowyphp/strings/issues",
+                "source": "https://github.com/glowyphp/strings"
+            },
+            "time": "2022-06-02T13:30:20+00:00"
         },
         {
             "name": "graham-campbell/result-type",
@@ -1372,6 +1564,156 @@
             "time": "2022-06-27T16:58:25+00:00"
         },
         {
+            "name": "thermage/thermage",
+            "version": "v0.19.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thermage/thermage.git",
+                "reference": "0d4a060abc4c1a3fc16c7a7acae69dcb4962b634"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thermage/thermage/zipball/0d4a060abc4c1a3fc16c7a7acae69dcb4962b634",
+                "reference": "0d4a060abc4c1a3fc16c7a7acae69dcb4962b634",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "glowy/arrays": "^4.0.0",
+                "glowy/macroable": "^3.0",
+                "glowy/strings": "^4.0.0",
+                "php": "^7.4 || ^8.0",
+                "thunderer/shortcode": "^0.7.4"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "9.0.0",
+                "pestphp/pest": "^1.21.1",
+                "phpstan/phpstan": "^1.2.0",
+                "symfony/var-dumper": "^5.4.1"
+            },
+            "bin": [
+                "bin/thermage"
+            ],
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Thermage\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergey Romanenko",
+                    "email": "sergey.romanenko@flextype.org",
+                    "homepage": "https://awilum.github.io"
+                }
+            ],
+            "description": "Thermage provides a fluent and incredibly powerful object-oriented interface for customizing CLI output text color, background, formatting, theming and more.",
+            "keywords": [
+                "Thermage",
+                "ansi-colors",
+                "cli",
+                "console",
+                "console-colors",
+                "console-tool",
+                "terminal",
+                "terminal-colors"
+            ],
+            "support": {
+                "issues": "https://github.com/thermage/thermage/issues",
+                "source": "https://github.com/thermage/thermage"
+            },
+            "funding": [
+                {
+                    "url": "https://paypal.me/awilum",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://qiwi.com/p/79805359141",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://www.patreon.com/awilum",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2022-02-18T14:28:38+00:00"
+        },
+        {
+            "name": "thunderer/shortcode",
+            "version": "v0.7.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thunderer/Shortcode.git",
+                "reference": "a4fee30613bd46efb421f8305aff0466a3268a99"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thunderer/Shortcode/zipball/a4fee30613bd46efb421f8305aff0466a3268a99",
+                "reference": "a4fee30613bd46efb421f8305aff0466a3268a99",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=4.1",
+                "symfony/yaml": ">=2.0"
+            },
+            "suggest": {
+                "ext-dom": "if you want to use XML serializer",
+                "ext-json": "if you want to use JSON serializer",
+                "symfony/yaml": "if you want to use YAML serializer"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Thunder\\Shortcode\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tomasz Kowalczyk",
+                    "email": "tomasz@kowalczyk.cc"
+                }
+            ],
+            "description": "Advanced shortcode (BBCode) parser and engine for PHP",
+            "keywords": [
+                "bbcode",
+                "engine",
+                "library",
+                "parser",
+                "shortcode"
+            ],
+            "support": {
+                "issues": "https://github.com/thunderer/Shortcode/issues",
+                "source": "https://github.com/thunderer/Shortcode/tree/v0.7.5"
+            },
+            "time": "2022-01-13T18:53:33+00:00"
+        },
+        {
             "name": "vlucas/phpdotenv",
             "version": "v5.5.0",
             "source": {
@@ -1590,9 +1932,9 @@
     "platform": {
         "php": ">=7.4",
         "ext-json": "*",
+        "ext-swoole": "*",
         "ext-zlib": "*",
-        "ext-openssl": "*",
-        "ext-redis": "*"
+        "ext-openssl": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.3.0"
