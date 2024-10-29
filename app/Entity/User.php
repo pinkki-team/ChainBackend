@@ -46,6 +46,9 @@ class User extends AbstractEntity implements HasExtra {
     public static function mainKey(): string {
         return 'uid';
     }
+    public function simpleInfo(): string {
+        return "[{$this->uid}]{$this->name}";
+    }
 
     public function getExtra(): array {
         return $this->extra;

@@ -59,13 +59,14 @@ class RoomUtil {
     }
     //用户加入房间事件
     public static function userEnterRoomEvent(User $user, string $roomId) {
+        vlog("{$user->simpleInfo()}加入了房间[$roomId]");
         self::pushUserJoin($roomId, $user);
     }
     //用户深断线事件
     public static function userDisconnectEvent(User $user, string $roomId) {
         self::pushUserDisconnect($roomId, $user);
     }
-    //用户因断线过久离开房间事件
+    //用户因断线过久离开房间事件 
     public static function userDisconnectLeftEvent(User $user, string $roomId) {
         self::pushUserLeftDisconnected($roomId, $user);
     }

@@ -3,8 +3,11 @@
 /** @noinspection PhpDynamicFieldDeclarationInspection */
 
 use App\Utils\SocketUtil;
+use function Thermage\render;
+use function Thermage\cowsay;
 
 require_once __DIR__. '/vendor/autoload.php';
+require_once __DIR__. '/app/helpers.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->safeLoad();
@@ -57,12 +60,12 @@ $server->set([
 $server->fdTable = $fdTable;
 $server->userTable = $userTable;
 $server->roomTable = $roomTable;
-echo "服务器启动\n";
-
+vlog("接龙服务器启动，当前版本:0.0.1-alpha", "pink");
+//render(cowsay("会米画猜后端")->template('fox')->w30());
 $service = new \App\Service\SocketService();
 $httpService = new \App\Service\HttpService();
 $server->on('open', function (\Swoole\WebSocket\Server $server, \Swoole\Http\Request $request) use($service) {
-    echo "[{$request->fd}]握手成功\n";
+    vlogDebug("[{$request->fd}]握手成功");
     SocketUtil::contextSet(SocketUtil::CTX_SERVER, $server);
     SocketUtil::contextSet(SocketUtil::CTX_FD, $request->fd);
     $service->onConnect($request->fd, $request->get);
@@ -70,7 +73,7 @@ $server->on('open', function (\Swoole\WebSocket\Server $server, \Swoole\Http\Req
 $server->on('message', function (\Swoole\WebSocket\Server $server, \Swoole\WebSocket\Frame $frame) use($service) {
     SocketUtil::contextSet(SocketUtil::CTX_SERVER, $server);
     SocketUtil::contextSet(SocketUtil::CTX_FD, $frame->fd);
-//    echo "[{$frame->fd}]原始消息:{$frame->data}\n";
+//    vlog("[{$frame->fd}]原始消息:{$frame->data}");
     $service->onMessage($frame, $frame->fd);
 });
 $server->on('request', function (Swoole\Http\Request $request, Swoole\Http\Response $response) use($httpService) {
@@ -101,7 +104,7 @@ $server->on('request', function (Swoole\Http\Request $request, Swoole\Http\Respo
 $server->on('close', function (\Swoole\WebSocket\Server $server, $fd) use($service) {
     $wsStatus = $server->connection_info($fd)['websocket_status'];
     if ($wsStatus !== 3) return;
-    echo "[{$fd}]客户端关闭\n";
+    vlogDebug("[{$fd}]客户端关闭");
     SocketUtil::contextSet(SocketUtil::CTX_SERVER, $server);
     $service->onFdClose($fd);
 });
@@ -110,11 +113,11 @@ $server->on('close', function (\Swoole\WebSocket\Server $server, $fd) use($servi
 SocketUtil::contextSet(SocketUtil::CTX_SERVER, $server);
 
 $GLOBALS['server'] = $server;
-function checkAll($server) {
-    echo "状态检查\n";
-    echo \App\Utils\TableUtil::genTableStats();
-    echo "\n";
-}
+//function checkAll($server) {
+//    vlog("状态检查");
+//    echo \App\Utils\TableUtil::genTableStats();
+//    echo "\n";
+//}
 //\Swoole\Timer::after(1000, function() use($server) {
 //    checkAll($server);
 //});

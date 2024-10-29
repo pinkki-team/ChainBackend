@@ -2,7 +2,6 @@
 
 namespace App\Utils;
 
-use App\Entity\Room;
 use App\Entity\User;
 use Illuminate\Support\Str;
 use Swoole\Timer;
@@ -32,7 +31,7 @@ class ReconnectUtil {
         $user->updateValues([
             'roomStatus' => User::ROOM_STATUS_DISCONNECTED_1,
         ]);
-        echo "[用户浅断线]{$user->name}\n";
+        vlog("[用户浅断线]{$user->name}");
     }
     
     public static function disconnectTimed(string $timerId, string $uid, string $roomId) {
@@ -50,7 +49,7 @@ class ReconnectUtil {
         Timer::after(self::DISCONNECT_LEFT_TIME * 1000, function ($randId, $uid, $roomId) {
             ReconnectUtil::disconnectLeftTimed($randId, $uid, $roomId);
         }, $randId, $uid, $roomId);
-        echo "[用户深断线]{$user->name}\n";
+        vlog("[用户深断线]{$user->name}");
     }
 
     public static function disconnectLeftTimed(string $timerId, string $uid, string $roomId) {
@@ -65,7 +64,7 @@ class ReconnectUtil {
             'roomId' => null
         ]);
         RoomUtil::userDisconnectLeftEvent($user, $roomId);
-        echo "[用户深断线退出房间]{$user->name}\n";
+        vlog("[用户深断线退出房间]{$user->name}");
     }
     
     public static function check(User $user, string $roomId) {
