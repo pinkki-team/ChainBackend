@@ -6,6 +6,7 @@ use App\Entity\Room;
 use App\Entity\User;
 use App\Exception\LoginException;
 use App\Service\Actions\AdminActions;
+use App\Service\Lexicon\LexiconService;
 use App\Utils\AdminUtil;
 use App\Utils\ChatUtil;
 use App\Utils\FdControl;
@@ -18,6 +19,8 @@ use Swoole\WebSocket\Frame;
 class SocketService extends BaseService {
     use AdminActions;
     static $nameDictTest = [];
+    /** @var LexiconService */
+    public $lexiconService;
     
     const NO_AUTH_LIST = [
         'login',

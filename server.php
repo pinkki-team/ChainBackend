@@ -64,6 +64,12 @@ vlog("接龙服务器启动，当前版本:0.0.1-alpha", "pink");
 //render(cowsay("会米画猜后端")->template('fox')->w30());
 $service = new \App\Service\SocketService();
 $httpService = new \App\Service\HttpService();
+$lexiconService = new \App\Service\Lexicon\LexiconService();
+$service->lexiconService = $lexiconService;
+
+//加载词库
+
+
 $server->on('open', function (\Swoole\WebSocket\Server $server, \Swoole\Http\Request $request) use($service) {
     vlogDebug("[{$request->fd}]握手成功");
     SocketUtil::contextSet(SocketUtil::CTX_SERVER, $server);

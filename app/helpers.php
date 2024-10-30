@@ -17,3 +17,9 @@ if (!function_exists('vlog')) {
         vlog($msg, 'gray');
     }
 }
+
+if (!function_exists('lexicon_path')) {
+    function lexicon_path($path = ''): string {
+        return __DIR__ . '/../Lexicons' .($path ? DIRECTORY_SEPARATOR.$path : $path);
+    }
+}
